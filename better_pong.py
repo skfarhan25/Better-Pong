@@ -132,5 +132,6 @@ while True:
     if RNG == 1:    
         pygame.draw.rect(screen, "yellow", PowerUp)
 
+    # Update the window
     pygame.display.flip()
     clock.tick(60)
