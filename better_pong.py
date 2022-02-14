@@ -1,7 +1,7 @@
 import pygame,sys,random
 
 def ball_animation():
-    global ball_dx,ball_dy,ball_color
+    global ball_dx,ball_dy,ball_color,RNG
 
     # Move the ball
     ball.x += ball_dx
@@ -14,12 +14,22 @@ def ball_animation():
         ball_reset()
 
     if ball.colliderect(PlayerLeft):
+        ball.x += 10
         ball_dx *= -1
         ball_color = "red"
+        if RNG == 1:
+            pass
+        else:
+            RNG = random.choice(range(1,11))
         
     if ball.colliderect(PlayerRight):
+        ball.x -= 10
         ball_dx *= -1
         ball_color = "blue"
+        if RNG == 1:
+            pass
+        else:
+            RNG = random.choice(range(1,11))
 
 def player_animation():
     PlayerLeft.y += PlayerLeft_speed
@@ -45,12 +55,12 @@ def player_animation():
     # if opponent.bottom >= screen_y:
     #     opponent.bottom = screen_y
 
-
 def ball_reset():
     global ball_dx, ball_dy
     ball.center = (screen_x/2, screen_y/2)
     ball_dx *= random.choice((1,-1))
     ball_dy *= random.choice((1,-1))
+
 
 # General Setup
 pygame.init()
@@ -62,11 +72,11 @@ screen_y = 650
 screen = pygame.display.set_mode((screen_x, screen_y))
 pygame.display.set_caption('Better Pong by Far')
 
-# ball
+# Objects
 ball = pygame.Rect(screen_x/2 - 15, screen_y/2 - 15, 30, 30)
 PlayerLeft = pygame.Rect(10, screen_y/2 - 70, 10, 140)
 PlayerRight = pygame.Rect(screen_x - 20, screen_y/2 - 70, 10, 140)
-
+PowerUp = pygame.Rect(random.choice((400,800)), random.choice((100,500)), 50, 50)
 
 ball_color = 'white'
 bg_color = pygame.Color('grey12')
@@ -77,6 +87,9 @@ ball_dy = 7 * random.choice((1,-1))
 PlayerLeft_speed = 0
 PlayerRight_speed = 0
 BOT_speed = 7
+RNG = 0
+
+print(PlayerRight.left)
 
 # Main Loop
 while True:
@@ -115,6 +128,9 @@ while True:
     pygame.draw.ellipse(screen, ball_color, ball)
     pygame.draw.aaline(screen, light_grey, (screen_x/2, 0),
                        (screen_x/2, screen_y))
+    
+    if RNG == 1:    
+        pygame.draw.rect(screen, "yellow", PowerUp)
 
     pygame.display.flip()
     clock.tick(60)
