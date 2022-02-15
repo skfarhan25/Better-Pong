@@ -31,6 +31,10 @@ def ball_animation():
         else:
             RNG = random.choice(range(1,11))
 
+    # TODO: make this work
+    # if ball.colliderect(PowerUp):
+    #     ball_dx += 2
+
 def player_animation():
     PlayerLeft.y += PlayerLeft_speed
     PlayerRight.y += PlayerRight_speed
