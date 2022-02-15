@@ -93,8 +93,6 @@ PlayerRight_speed = 0
 BOT_speed = 7
 RNG = 0
 
-print(PlayerRight.left)
-
 # Main Loop
 while True:
     # Taking Input for quitting the game
