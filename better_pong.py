@@ -13,6 +13,7 @@ def ball_animation():
     if ball.left <= 0 or ball.right >= screen_x:
         ball_reset()
 
+    # Colliding with paddle
     if ball.colliderect(PlayerLeft):
         ball.x += 10
         ball_dx *= -1
@@ -31,15 +32,23 @@ def ball_animation():
         else:
             RNG = random.choice(range(1,6))
 
-    # TODO: make this work
+    # Colliding with PowerUp
     if ball.colliderect(PowerUp):
+        # Increase ball speed slightly, changes position
         if RNG == 1:
-            if ball_dx > 0:
+            if ball_color == "red":
                 ball_dx += 2
-            if ball_dx < 0:
+            if ball_color == "blue":
                 ball_dx -= 2
-            RNG = 0
-        
+            RNG = random.choice(range(1,6))
+            PowerUp.center = (random.choice((400,800)), random.choice((100,500)))
+
+        # Reverse ball speed slightly or drastically depending on hitspot
+        if RNG == 2:
+            if ball_color == "red":
+                ball_dx -= 2
+            if ball_color == "blue":
+                ball_dx += 2
 
 def player_animation():
     PlayerLeft.y += PlayerLeft_speed
@@ -66,11 +75,23 @@ def player_animation():
     #     opponent.bottom = screen_y
 
 def ball_reset():
-    global ball_dx, ball_dy
+    global ball_dx, ball_dy, ball_color
+    ball_color = 'white'
     ball.center = (screen_x/2, screen_y/2)
     ball_dx = 7
     ball_dx *= random.choice((1,-1))
     ball_dy *= random.choice((1,-1))
+
+def RNG_Power():
+    if RNG == 1:
+        PowerUp_Color = "yellow"
+        pygame.Rect.update(PowerUp, PowerUp.x, PowerUp.y, 50, 100)
+        pygame.draw.rect(screen, PowerUp_Color, PowerUp)
+    if RNG == 2:
+        PowerUp_Color = "red"
+        pygame.Rect.update(PowerUp, PowerUp.x, PowerUp.y, 200, 20)
+        pygame.draw.rect(screen, PowerUp_Color, PowerUp)
+
 
 
 # General Setup
@@ -85,20 +106,22 @@ pygame.display.set_caption('Better Pong by Far')
 
 # Objects
 ball = pygame.Rect(screen_x/2 - 15, screen_y/2 - 15, 30, 30)
-PlayerLeft = pygame.Rect(10, screen_y/2 - 70, 10, 140)
-PlayerRight = pygame.Rect(screen_x - 20, screen_y/2 - 70, 10, 140)
-PowerUp = pygame.Rect(random.choice((400,800)), random.choice((100,500)), 50, 500)
+PlayerLeft = pygame.Rect(20, screen_y/2 - 70, 10, 140)
+PlayerRight = pygame.Rect(screen_x - 30, screen_y/2 - 70, 10, 140)
+PowerUp = pygame.Rect(random.choice((400,800)), random.choice((100,500)), 50, 100)
 
+# PowerUp_Color = "yellow"
 ball_color = 'white'
 bg_color = pygame.Color('grey12')
 light_grey = (200, 200, 200)
 
+# Speeds
 ball_dx = 7 * random.choice((1,-1))
 ball_dy = 7 * random.choice((1,-1))
 PlayerLeft_speed = 0
 PlayerRight_speed = 0
 BOT_speed = 7
-RNG = 1
+RNG = 0
 
 # Main Loop
 while True:
@@ -138,8 +161,7 @@ while True:
     pygame.draw.aaline(screen, light_grey, (screen_x/2, 0),
                        (screen_x/2, screen_y))
     
-    if RNG == 1:    
-        pygame.draw.rect(screen, "yellow", PowerUp)
+    RNG_Power()
 
     # Update the window
     pygame.display.flip()
