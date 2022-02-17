@@ -1,7 +1,7 @@
 import pygame,sys,random
 
 def ball_animation():
-    global ball_dx,ball_dy,ball_color,RNG
+    global ball_dx,ball_dy,ball_color,RNG,PlayerRight_Score,PlayerLeft_Score
 
     # Move the ball
     ball.x += ball_dx
@@ -10,7 +10,13 @@ def ball_animation():
     # Border Check
     if ball.top <= 0 or ball.bottom >= screen_y:
         ball_dy *= -1
-    if ball.left <= 0 or ball.right >= screen_x:
+        
+    # Score and reset
+    if ball.left <= 0:
+        PlayerRight_Score += 1
+        ball_reset()
+    if ball.right >= screen_x:
+        PlayerLeft_Score += 1
         ball_reset()
 
     # Colliding with paddle
@@ -20,6 +26,8 @@ def ball_animation():
         ball_color = "red"
         if RNG == 1:
             pass
+        elif RNG == 2:
+            pass
         else:
             RNG = random.choice(range(1,6))
         
@@ -28,6 +36,8 @@ def ball_animation():
         ball_dx *= -1
         ball_color = "blue"
         if RNG == 1:
+            pass
+        elif RNG == 2:
             pass
         else:
             RNG = random.choice(range(1,6))
@@ -46,9 +56,9 @@ def ball_animation():
         # Reverse ball speed slightly or drastically depending on hitspot
         if RNG == 2:
             if ball_color == "red":
-                ball_dx -= 2
+                ball_dx -= 4
             if ball_color == "blue":
-                ball_dx += 2
+                ball_dx += 4
 
 def player_animation():
     PlayerLeft.y += PlayerLeft_speed
@@ -93,7 +103,6 @@ def RNG_Power():
         pygame.draw.rect(screen, PowerUp_Color, PowerUp)
 
 
-
 # General Setup
 pygame.init()
 clock = pygame.time.Clock()
@@ -108,20 +117,24 @@ pygame.display.set_caption('Better Pong by Far')
 ball = pygame.Rect(screen_x/2 - 15, screen_y/2 - 15, 30, 30)
 PlayerLeft = pygame.Rect(20, screen_y/2 - 70, 10, 140)
 PlayerRight = pygame.Rect(screen_x - 30, screen_y/2 - 70, 10, 140)
-PowerUp = pygame.Rect(random.choice((400,800)), random.choice((100,500)), 50, 100)
+PowerUp = pygame.Rect(random.choice((350,800)), random.choice((100,500)), 50, 100)
 
-# PowerUp_Color = "yellow"
 ball_color = 'white'
 bg_color = pygame.Color('grey12')
 light_grey = (200, 200, 200)
 
-# Speeds
+# Speed Variables
 ball_dx = 7 * random.choice((1,-1))
 ball_dy = 7 * random.choice((1,-1))
 PlayerLeft_speed = 0
 PlayerRight_speed = 0
 BOT_speed = 7
-RNG = 0
+RNG = 2
+
+# Score Variables
+PlayerLeft_Score = 0
+PlayerRight_Score = 0
+game_font = pygame.font.Font("freesansbold.ttf", 32)
 
 # Main Loop
 while True:
@@ -157,11 +170,16 @@ while True:
     screen.fill(bg_color)
     pygame.draw.rect(screen, "red", PlayerLeft)
     pygame.draw.rect(screen, "blue", PlayerRight)
+    RNG_Power()
     pygame.draw.ellipse(screen, ball_color, ball)
     pygame.draw.aaline(screen, light_grey, (screen_x/2, 0),
                        (screen_x/2, screen_y))
     
-    RNG_Power()
+    PlayerRight_text = game_font.render(f"{PlayerRight_Score}", False, light_grey)
+    screen.blit(PlayerRight_text, (screen_x / 2 - 7 + 20, screen_y / 2 - 7))
+
+    PlayerLeft_text = game_font.render(f"{PlayerLeft_Score}", False, light_grey)
+    screen.blit(PlayerLeft_text, (screen_x / 2 - 7 - 20, screen_y / 2 - 7))
 
     # Update the window
     pygame.display.flip()
